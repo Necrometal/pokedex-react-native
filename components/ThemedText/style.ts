@@ -1,44 +1,97 @@
-import { StyleSheet } from 'react-native'
+import { Dimensions, PixelRatio, StyleSheet } from 'react-native';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const SCALE = SCREEN_WIDTH > SCREEN_HEIGHT ? SCREEN_HEIGHT : SCREEN_WIDTH;
+const BASE_WIDTH = 375;
+
+const fontConfig = {
+  phone: {
+    small: { min: 0.8, max: 1 },
+    medium: { min: 1, max: 1.6 },
+    large: { min: 1.2, max: 1.8 },
+  },
+  tablet: {
+    small: { min: 1.3, max: 1.4 },
+    medium: { min: 1.4, max: 1.5 },
+    large: { min: 1.5, max: 1.7 },
+  },
+ };
+
+export const getDeviceType = (): 'tablet' | 'phone' => {
+  const pixelDensity = PixelRatio.get();
+  const adjustedWidth = SCREEN_WIDTH * pixelDensity;
+  const adjustedHeight = SCREEN_HEIGHT * pixelDensity;
+
+  if (pixelDensity < 2 && (adjustedWidth >= 1000 || adjustedHeight >= 1000)) {
+    return 'tablet';
+  } else if (pixelDensity === 2 && (adjustedWidth >= 1920 || adjustedHeight >= 1920)) {
+    return 'tablet';
+  } else {
+    return 'phone';
+  }
+};
+
+const getScreenSizeCategory = (): 'small' | 'medium' | 'large' => {
+  if (SCALE < 350) return 'small';
+  if (SCALE > 500) return 'large';
+  return 'medium';
+ };
+
+export const getFontSize = (size: number): number => {
+  const deviceType = getDeviceType();
+  const screenCategory = getScreenSizeCategory();
+  const config = fontConfig[deviceType][screenCategory];
+ 
+  const scaleFactor = SCALE / BASE_WIDTH;
+  const clampedScaleFactor = Math.min(Math.max(scaleFactor, config.min), config.max);
+  let newSize = size * clampedScaleFactor;
+
+  if (deviceType === 'tablet') {
+    newSize *= 1.1; // Increase tablet font sizes by an additional 10%
+  }
+  console.log(deviceType, screenCategory)
+  return Math.round(PixelRatio.roundToNearestPixel(newSize)) / PixelRatio.getFontScale();
+};
 
 export const styles = StyleSheet.create({
   headline: {
-    fontSize: 24,
-    lineHeight: 32,
+    fontSize: getFontSize(24),
+    lineHeight: getFontSize(32),
     fontWeight: 'bold'
   },
   caption: {
-    fontSize: 8,
-    lineHeight: 12,
+    fontSize: getFontSize(8),
+    lineHeight: getFontSize(12),
     fontWeight: 'regular'
   },
   subtitle1: {
-    fontSize: 14,
-    lineHeight: 16,
+    fontSize: getFontSize(14),
+    lineHeight: getFontSize(16),
     fontWeight: 'bold'
   },
   subtitle2: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: getFontSize(12),
+    lineHeight: getFontSize(16),
     fontWeight: 'bold'
   },
   subtitle3: {
-    fontSize: 10,
-    lineHeight: 16,
+    fontSize: getFontSize(10),
+    lineHeight: getFontSize(16),
     fontWeight: 'bold'
   },
   body1: {
-    fontSize: 14,
-    lineHeight: 16,
+    fontSize: getFontSize(14),
+    lineHeight: getFontSize(16),
     fontWeight: 'regular'
   },
   body2: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: getFontSize(12),
+    lineHeight: getFontSize(16),
     fontWeight: 'regular'
   },
   body3: {
-    fontSize: 10,
-    lineHeight: 16,
+    fontSize: getFontSize(10),
+    lineHeight: getFontSize(16),
     fontWeight: 'regular'
   }
 })
