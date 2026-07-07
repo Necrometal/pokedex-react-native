@@ -2,7 +2,8 @@ import { ThemedText } from "@/components/ThemedText";
 import { useColorTheme } from "@/hooks/useColorTheme";
 import { PokemonDetails } from "@/repositories/model/pokemon";
 import { capitalizeFirstLetter } from "@/utils/string";
-import { Animated, Image, StyleSheet, View, ViewProps } from "react-native";
+import { router } from "expo-router";
+import { Animated, Image, StyleSheet, TouchableHighlight, View, ViewProps } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import usePokemonViewDetailsAnimation from "./useAnimation";
 import useRenderInfo from "./useRenderInfo";
@@ -17,13 +18,19 @@ export default function PokemonViewDetails({pokemon}: Props){
 
   const {backgroundColor} = usePokemonViewDetailsAnimation(pokemon)
   const renderInfo = useRenderInfo(pokemon)
+
+  const goBack = () => {
+    router.back()
+  }
   
   return (
     <Animated.View style={[styles.container, {backgroundColor}]}>
       <SafeAreaView style={[styles.container]}>
         <View style={[styles.header]}>
           <View style={styles.headerLeft}>
-            <Image width={20.53} height={20.53} style={styles.arrow} source={require('@/assets/images/arrow_back.png')} />
+            <TouchableHighlight onPress={goBack} underlayColor="transparent">
+              <Image width={20.53} height={20.53} style={styles.arrow} source={require('@/assets/images/arrow_back.png')} />
+            </TouchableHighlight>
             <ThemedText color="grayWhite" variant="headline">{capitalizeFirstLetter(renderInfo.name)}</ThemedText>
           </View>
           <ThemedText color="grayWhite" variant="subtitle2">#{String(renderInfo.id).padStart(3, '0')}</ThemedText>
