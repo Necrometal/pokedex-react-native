@@ -17,7 +17,7 @@ export default function Index() {
     <SafeAreaView style={[styles.container, {backgroundColor: colors.tint}]}>
       <View style={styles.header}>
         <Image source={require('@/assets/images/pokeball.png')} width={24} height={24}/>
-        <ThemedText color="grayWhite" variant="headline" >Pokédex {pokemons.length}</ThemedText>
+        <ThemedText color="grayWhite" variant="headline" >Pokédex ({pokemons.length})</ThemedText>
       </View>
 
       <Card style={styles.body}>
