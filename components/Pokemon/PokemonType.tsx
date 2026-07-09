@@ -10,6 +10,7 @@ type Props = {
 export default function PokemonType({ type }: Props){
   const label = capitalizeFirstLetter(type)
   const backgroundColor = Colors.type[type]
+  
   return (
     <View style={[styles, { backgroundColor }]}>
       <ThemedText color="grayWhite" variant="subtitle3">

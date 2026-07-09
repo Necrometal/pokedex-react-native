@@ -3,12 +3,14 @@ import { RootView } from "@/components/Layout/RootView";
 import { Row } from "@/components/Layout/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { ColorType } from "@/constants/colors";
+import { STAT_NAME } from "@/constants/pokemon";
 import { useColorTheme } from "@/hooks/useColorTheme";
 import { FlavorText, PokemonDetails, PokemonSpecies } from "@/repositories/model/pokemon";
 import { formatWeight, getPokemonArtWork } from "@/utils/pokemon";
 import { capitalizeFirstLetter, cleanText } from "@/utils/string";
 import { Animated, Image, View, ViewProps } from "react-native";
 import PokemonSpec from "../PokemonSpec";
+import { PokemonStat } from "../PokemonStat";
 import PokemonType from "../PokemonType";
 import Header from "./Header";
 import { styles } from "./style";
@@ -67,6 +69,14 @@ export default function PokemonViewDetails({pokemon, species}: Props){
               <ThemedText variant="subtitle1" style={[styles.subtitle, { color: colorType }]}>
                 Base stats
               </ThemedText>
+
+              <View>
+                {
+                  data.stats.map((stat, i) => (
+                    <PokemonStat index={i} key={`stat-${stat.stat.name}`} color={colorType} name={STAT_NAME[stat.stat.name as keyof typeof STAT_NAME]} value={stat.base_stat}/>
+                  ))
+                }
+              </View>
             </Card>
           </View>
         </View>

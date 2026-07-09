@@ -9,3 +9,7 @@ export function cleanText(text: string){
     .replace(/\.\s+/g, '. ')
     .trim();
 }
+
+export function formatNumber(num: number, digit: number = 3){
+  return num.toString().padStart(digit, '0');
+}
