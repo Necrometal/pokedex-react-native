@@ -1,58 +1,86 @@
+import { Card } from "@/components/Card";
+import { RootView } from "@/components/Layout/RootView";
+import { Row } from "@/components/Layout/Row";
 import { ThemedText } from "@/components/ThemedText";
+import { ColorType } from "@/constants/colors";
+import { STAT_NAME } from "@/constants/pokemon";
 import { useColorTheme } from "@/hooks/useColorTheme";
-import { PokemonDetails } from "@/repositories/model/pokemon";
-import { capitalizeFirstLetter } from "@/utils/string";
-import { Animated, Image, StyleSheet, View, ViewProps } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { FlavorText, PokemonDetails, PokemonSpecies } from "@/repositories/model/pokemon";
+import { formatWeight, getPokemonArtWork } from "@/utils/pokemon";
+import { capitalizeFirstLetter, cleanText } from "@/utils/string";
+import { Animated, Image, View, ViewProps } from "react-native";
+import PokemonSpec from "../PokemonSpec";
+import { PokemonStat } from "../PokemonStat";
+import PokemonType from "../PokemonType";
+import Header from "./Header";
+import { styles } from "./style";
 import usePokemonViewDetailsAnimation from "./useAnimation";
 import useRenderInfo from "./useRenderInfo";
 
 type Props = ViewProps & {
   pokemon?: PokemonDetails;
   isFetching: boolean;
+  species: PokemonSpecies
 }
 
-export default function PokemonViewDetails({pokemon}: Props){
-  const colors = useColorTheme()
+export default function PokemonViewDetails({pokemon, species}: Props){
 
-  const {backgroundColor} = usePokemonViewDetailsAnimation(pokemon)
-  const renderInfo = useRenderInfo(pokemon)
-  
+  const data = useRenderInfo(pokemon)
+  const {backgroundColor, colorType} = usePokemonViewDetailsAnimation(data)
+  const colors = useColorTheme()
+  const bio = species.flavor_text_entries?.find(({ language }: FlavorText) => language.name === 'en')
+
   return (
     <Animated.View style={[styles.container, {backgroundColor}]}>
-      <SafeAreaView style={[styles.container]}>
-        <View style={[styles.header]}>
-          <View style={styles.headerLeft}>
-            <Image width={20.53} height={20.53} style={styles.arrow} source={require('@/assets/images/arrow_back.png')} />
-            <ThemedText color="grayWhite" variant="headline">{capitalizeFirstLetter(renderInfo.name)}</ThemedText>
+      <RootView>
+        <View>
+          <Image source={require('@/assets/images/big_pokeball.png')} style={styles.backgroundIcon}/>
+          <Header pokeName={capitalizeFirstLetter(data.name)} pokeId={String(data.id).padStart(3, '0')}/>
+          <View style={styles.body}>
+            <Image 
+              source={pokemon ? {uri: getPokemonArtWork(pokemon.id)} : require('@/assets/images/Silhouette.png')} 
+              style={styles.picture}
+            />
+            <Card style={styles.card}>
+              <Row gap={16}>
+                {
+                  data.types.map(t => (
+                    <PokemonType key={`type-${t.type.name}`} type={t.type.name as ColorType}/>
+                  ))
+                }
+              </Row>
+              <ThemedText variant="subtitle1" style={[styles.subtitle, { color: colorType }]}>
+                About
+              </ThemedText>
+              <Row style={{ marginBottom: 8}}>
+                <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/weight.png')} title={formatWeight(data.weight)} description="Weight"/>
+                <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/straighten_2.png')} title={`${data.height} m`} description="Height"/>
+                <PokemonSpec 
+                  style={styles.about} 
+                  title={data.moves.slice(0, 2).map((m) => capitalizeFirstLetter(m.move.name)).join("\n")}
+                  description="Moves"
+                />
+              </Row>
+
+              <ThemedText style={styles.flavor} color="grayDark" variant="body3">
+                { bio ? cleanText(bio.flavor_text) : 'unknown' }
+              </ThemedText>
+              
+              <ThemedText variant="subtitle1" style={[styles.subtitle, { color: colorType }]}>
+                Base stats
+              </ThemedText>
+
+              <View>
+                {
+                  data.stats.map((stat, i) => (
+                    <PokemonStat index={i} key={`stat-${stat.stat.name}`} color={colorType} name={STAT_NAME[stat.stat.name as keyof typeof STAT_NAME]} value={stat.base_stat}/>
+                  ))
+                }
+              </View>
+            </Card>
           </View>
-          <ThemedText color="grayWhite" variant="subtitle2">#{String(renderInfo.id).padStart(3, '0')}</ThemedText>
         </View>
-      </SafeAreaView>
+      </RootView>
     </Animated.View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 24
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8
-  },
-  arrow: {
-    tintColor: 'white',
-    width: 30,
-    height: 30
-  }
-})

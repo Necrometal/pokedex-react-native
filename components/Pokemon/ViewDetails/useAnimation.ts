@@ -1,17 +1,18 @@
-import { Colors } from "@/constants/colors";
+import { Colors, ColorType } from "@/constants/colors";
 import { useColorTheme } from "@/hooks/useColorTheme";
 import { PokemonDetails } from "@/repositories/model/pokemon";
 import { useEffect, useRef } from "react";
 import { Animated } from "react-native";
 
-export default function usePokemonViewDetailsAnimation(pokemon?: PokemonDetails) {
+export default function usePokemonViewDetailsAnimation(pokemon: PokemonDetails) {
     const colors = useColorTheme()
+    const colorType = Colors.type[pokemon.types[0].type.name as ColorType]
   
     const background = useRef(new Animated.Value(0)).current
     
     const backgroundColor = background.interpolate({
       inputRange: [0, 1],
-      outputRange: [colors.grayLight, pokemon ? Colors.type[pokemon.types[0].type.name as keyof typeof Colors.type] : colors.grayLight],
+      outputRange: [colors.grayLight, colorType],
     })
 
     const animate = (value: number) => {
@@ -28,6 +29,7 @@ export default function usePokemonViewDetailsAnimation(pokemon?: PokemonDetails)
     }, [pokemon])
 
     return {
-        backgroundColor
+        backgroundColor,
+        colorType
     }
 }
