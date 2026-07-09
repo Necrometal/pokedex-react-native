@@ -3,6 +3,7 @@ import SearchBar from '@/components/Form/SearchBar';
 import { RootView } from '@/components/Layout/RootView';
 import { Row } from '@/components/Layout/Row';
 import PokemonCardListItem from '@/components/Pokemon/CardListItem';
+import SortButton, { SORT_VALUE, SortType } from '@/components/SortButton';
 import { ThemedText } from '@/components/ThemedText';
 import usePokemonList from '@/hooks/screen/usePokemonList';
 import { useColorTheme } from "@/hooks/useColorTheme";
@@ -16,10 +17,13 @@ export default function Index() {
 
   const { pokemons, isFetching, fetchNextPage, refetch } = usePokemonList()
   const [search, setSearch] = useState('')
+  const [sortKey, setSortKey] = useState<SortType>(SORT_VALUE.id)
 
-  const filteredPokemons = search 
-    ? pokemons.filter((p) => p.name.includes(search.toLocaleLowerCase()) || p.id.toString() === search)
-    : pokemons
+  const filteredPokemons = [
+    ...(search 
+      ? pokemons.filter((p) => p.name.includes(search.toLocaleLowerCase()) || p.id.toString() === search)
+      : pokemons)
+  ].sort((a, b) => a[sortKey] < b[sortKey] ? -1 : 1)
   
   const onChange = (s: string) => {
     setSearch(s)
@@ -32,7 +36,10 @@ export default function Index() {
           <Image source={require('@/assets/images/pokeball.png')} style={styles.headerIcon}/>
           <ThemedText color="grayWhite" variant="headline" >Pokédex</ThemedText>
         </Row>
-        <SearchBar value={search} onChange={onChange} />
+        <Row gap={8}>
+          <SearchBar value={search} onChange={onChange} style={styles.search}/>
+          <SortButton value={sortKey} onChange={setSortKey}/>
+        </Row>
       </View>
 
       <Card style={styles.body}>
@@ -85,5 +92,8 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 12,
+  },
+  search: {
+    flex: 1
   }
 })

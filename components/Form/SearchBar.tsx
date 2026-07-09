@@ -1,16 +1,16 @@
 import { Row } from '@/components/Layout/Row'
 import { styles as typo } from '@/components/ThemedText/style'
 import { Shadows } from '@/constants/shadows'
-import { Image, StyleSheet, TextInput } from "react-native"
+import { Image, StyleSheet, TextInput, ViewProps } from "react-native"
 
 type Props = {
   value: string,
   onChange: (s: string) => void
-}
+} & ViewProps
 
-export default function SearchBar({ value, onChange }: Props) {
+export default function SearchBar({ value, onChange, style, ...rest }: Props) {
   return (
-    <Row style={[styles.searchbar, Shadows.innerShadow]} gap={8}>
+    <Row style={[styles.searchbar, Shadows.innerShadow, style]} {...rest} gap={8}>
       <Image source={require('@/assets/images/search.png')} style={styles.icon}/>
       <TextInput 
         style={[styles.input, typo.body3]}
@@ -18,7 +18,6 @@ export default function SearchBar({ value, onChange }: Props) {
         value={value}
         placeholder="search"
         textAlignVertical="center"
-        
       />
     </Row>
   )
