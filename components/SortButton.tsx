@@ -2,8 +2,9 @@ import { Shadows } from "@/constants/shadows"
 import { useColorTheme } from "@/hooks/useColorTheme"
 import { type Pokemon } from "@/repositories/model/pokemon"
 import { getFontSize } from "@/utils/responsive"
+import { useRef, useState } from "react"
 import { createCallable } from 'react-call'
-import { Image, Modal, Pressable, StyleSheet, TouchableHighlight, View } from "react-native"
+import { Dimensions, Image, Modal, Pressable, StyleSheet, TouchableHighlight, View } from "react-native"
 import { Card } from "./Card"
 import { Radio } from "./Form/Radio"
 import { Row } from "./Layout/Row"
@@ -23,6 +24,12 @@ type Props = {
 
 type SortDialogType = {
   value: SortType,
+  position: PositionType
+}
+
+type PositionType = undefined | {
+  top: number,
+  right: number
 }
 
 const options = [
@@ -31,11 +38,20 @@ const options = [
 ]
 
 export default function SortButton({value, onChange}: Props) {
+  const btnRef = useRef<View>(null) 
+  const [position, setPosition] = useState<PositionType>()
+
   const onPress = async () => {
-    const response = await SortDialog.call({ value })
+    btnRef.current?.measureInWindow((x, y, width, height) => {
+      setPosition({
+        top: y + height,
+        right: Dimensions.get("window").width - x - width
+      })
+    })
+    const response = await SortDialog.call({ value, position })
     if(response) onChange(response)
-    // onChange(value === SORT_VALUE.id ? SORT_VALUE.name : SORT_VALUE.id)
   }
+
   return (
     <View>
       <TouchableHighlight 
@@ -43,7 +59,7 @@ export default function SortButton({value, onChange}: Props) {
         underlayColor="transparent" 
         onPress={onPress}
       >
-        <View>
+        <View ref={btnRef}>
           {
             value === SORT_VALUE.id 
             ? <Image source={require('@/assets/images/sort.png')} style={styles.icon}/>
@@ -58,6 +74,7 @@ export default function SortButton({value, onChange}: Props) {
 
 export const SortDialog = createCallable<SortDialogType, SortType | null>(({
   value,
+  position,
   call
 }) => {
   const colors = useColorTheme()
@@ -67,12 +84,12 @@ export const SortDialog = createCallable<SortDialogType, SortType | null>(({
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent
       visible
     >
       <Pressable style={styles.backdrop} onPress={() => call.end(null)}/>
-      <View style={[styles.popup, { backgroundColor: colors.tint }]}>
+      <View style={[styles.popup, { backgroundColor: colors.tint, ...position }]}>
         <ThemedText style={styles.title} variant="subtitle2" color="grayWhite">
           Sort by:
         </ThemedText>
@@ -115,7 +132,9 @@ const styles = StyleSheet.create({
     padding: 4,
     paddingTop: 16,
     gap: 16,
-    borderRadius: 12
+    borderRadius: 12,
+    position: 'absolute',
+    ...Shadows.dp2
   },
   backdrop: {
     flex: 1,
