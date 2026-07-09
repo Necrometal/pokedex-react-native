@@ -23,7 +23,13 @@ export function PokemonStat({ style, name, value, color, index = 0, ...rest }: P
       <View style={styles.statValueContainer}>
         <Row>
           <ThemedText style={styles.statValue} variant="body3">{formatNumber(value)}</ThemedText>
-          <ProgressBar delay={75 * (index + 1)} style={styles.statProgress} color={color} value={value}/>
+          <ProgressBar 
+            delay={75 * (index + 1)} 
+            style={styles.statProgress} 
+            color={color} 
+            value={value}
+            maxValue={200}
+          />
         </Row>
       </View>
     </Row>

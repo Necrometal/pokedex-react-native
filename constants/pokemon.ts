@@ -8,10 +8,10 @@ export const STAT_NAME = {
 }
 
 export const STAT_MAX_VALUE = {
-  hp: 255,
-  attack: 190,
-  defense: 230,
-  'special-attack': 195,
-  'special-defense': 230,
-  speed: 200
+  HP: 255,
+  ATK: 190,
+  DEF: 230,
+  SATK: 195,
+  SDEF: 230,
+  SPD: 200
 }

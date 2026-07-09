@@ -6,13 +6,13 @@ type Props = ViewProps & {
   height?: number,
   color?: string,
   value?: number,
-  delay?: number
+  delay?: number,
+  maxValue?: number
 }
 
-export default function ProgressBar({style, height, color, value, delay = 0, ...rest}: Props){
+export default function ProgressBar({style, height, color, value, delay = 0, maxValue, ...rest}: Props){
   const colors = useColorTheme()
-  const { onLayout, widthAnim } = useProgressAnimation({ value: value ?? 0, delay })
-  console.log(widthAnim)
+  const { onLayout, widthAnim } = useProgressAnimation({ value: value ?? 0, delay, maxValue })
 
   return (
     <View 
@@ -20,13 +20,20 @@ export default function ProgressBar({style, height, color, value, delay = 0, ...
         style, styles.root, 
         { 
           height: height ?? 4, 
-          borderRadius: height ?? 4, 
-          backgroundColor: color ?? colors.grayLight 
         }
       ]} 
       {...rest}
       onLayout={onLayout}
     >
+      <View 
+        style={[
+          styles.panel, 
+          {
+            height: height ?? 4,
+            backgroundColor: color ?? colors.grayLight,
+          }
+        ]}
+      />
       <Animated.View style={[
         styles.progression,
         { 
@@ -34,19 +41,21 @@ export default function ProgressBar({style, height, color, value, delay = 0, ...
           backgroundColor: color ?? colors.grayLight,
           width: widthAnim
         }
-      ]}></Animated.View>
+      ]} />
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   root: {
-    opacity: 0.2,
-    position: 'relative'
+    position: 'relative',
   },
   progression: {
     position: 'absolute',
     zIndex: 1,
     opacity: 1
+  },
+  panel: {
+    opacity: .3
   }
 })

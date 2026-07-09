@@ -16,32 +16,40 @@ export default function useProgressAnimation({
   const widthAnim = useRef(new Animated.Value(0)).current
   const containerRef = useRef<View>(null)
 
-  const [percent, setPercent] = useState(0);
+  const [container, setContainer] = useState(0);
 
   // Mesure la largeur du container une seule fois
   const onLayout = useCallback((event: LayoutChangeEvent) => {
-    const width = maxValue ?? event.nativeEvent.layout.width;
-    setPercent(width);
+    const layoutWidth = event.nativeEvent.layout.width
+    const width = maxValue ? calculScale(maxValue, layoutWidth) : layoutWidth;
+    setContainer(width);
   }, []);
+
+  const calculScale = (max: number, layout: number) => {
+    const p =  (value * 100) / max
+
+    return (layout * p) / 100
+  }
 
   // Animation
   const animateProgress = useCallback(() => {
-    if (percent === 0) return;
+    if (container === 0) return;
 
     const progress = Math.min(Math.max(value, 0), 100); // clamp entre 0 et 100
 
     Animated.timing(widthAnim, {
-      toValue: (progress / 100) * percent,
+      toValue: container,
+      // toValue: (progress / 100) * percent,
       duration: duration,
       useNativeDriver: false,
       easing: Easing.out(Easing.ease),
       delay
     }).start();
-  }, [value, percent, widthAnim, duration, delay]);
+  }, [value, container, widthAnim, duration, delay]);
 
    // Déclenche l'animation quand la largeur est disponible + valeur change
    useEffect(() => {
-    if (percent > 0) {
+    if (container > 0) {
       animateProgress();
     }
   }, [animateProgress]);
