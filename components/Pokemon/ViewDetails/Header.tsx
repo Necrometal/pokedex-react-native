@@ -14,12 +14,12 @@ export default function Header({pokeName, pokeId} :Props) {
   }
   return (
     <Row style={[styles.header]}>
-      <Row style={styles.headerLeft}>
-        <Pressable onPress={goBack}>
+      <Pressable onPress={goBack}>
+        <Row style={styles.headerLeft}>
           <Image width={20.53} height={20.53} style={styles.arrow} source={require('@/assets/images/arrow_back.png')} />
-        </Pressable>
-        <ThemedText color="grayWhite" variant="headline">{pokeName}</ThemedText>
-      </Row>
+          <ThemedText color="grayWhite" variant="headline">{pokeName}</ThemedText>
+        </Row>
+      </Pressable>
       <ThemedText color="grayWhite" variant="subtitle2">#{pokeId}</ThemedText>
     </Row>
   )

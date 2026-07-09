@@ -11,5 +11,6 @@ export function RootView({ style, ...rest }: Props) {
 const rootStyle = {
   flex: 1,
   paddingHorizontal: 4,
-  paddingTop: 4
+  paddingTop: 4,
+  position: 'relative'
 } satisfies ViewStyle

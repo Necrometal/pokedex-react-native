@@ -124,3 +124,13 @@ export type PokemonDetails = {
   types: PokemonTypeItem[];
 }
 
+export type FlavorText = {
+  flavor_text: string,
+  language: General,
+  version: General
+}
+
+export type PokemonSpecies = {
+  flavor_text_entries?: FlavorText[]
+}
+

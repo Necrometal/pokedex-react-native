@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/ThemedText';
-import { OFFICIAL_ARTWORK_PATH } from "@/constants/path";
 import { useColorTheme } from '@/hooks/useColorTheme';
+import { getPokemonArtWork } from '@/utils/pokemon';
 import { capitalizeFirstLetter } from '@/utils/string';
 import { Link } from 'expo-router';
 import { Image, Pressable, StyleSheet, View, ViewProps } from "react-native";
@@ -23,7 +23,7 @@ export default function PokemonCardListItem({item, style, ...props}: Props) {
           <View style={[styles.shadow, { backgroundColor: colors.graybackground }]} />
           <ThemedText style={styles.id} color="grayDark" variant='caption'>#{item.id}</ThemedText>
           <Image 
-            source={{uri: `${OFFICIAL_ARTWORK_PATH}${item.id}.png`}} 
+            source={{uri: getPokemonArtWork(item.id)}} 
             style={styles.picture}
           />
           <ThemedText variant='body3'>{capitalizeFirstLetter(item.name)}</ThemedText>

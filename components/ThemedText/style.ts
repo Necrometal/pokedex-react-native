@@ -10,37 +10,37 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   caption: {
-    fontSize: getFontSize(8),
+    fontSize: getFontSize(10),
     lineHeight: getFontSize(12),
     fontWeight: 'regular'
   },
   subtitle1: {
-    fontSize: getFontSize(14),
+    fontSize: getFontSize(16),
     lineHeight: getFontSize(16),
     fontWeight: 'bold'
   },
   subtitle2: {
-    fontSize: getFontSize(12),
+    fontSize: getFontSize(14),
     lineHeight: getFontSize(16),
     fontWeight: 'bold'
   },
   subtitle3: {
-    fontSize: getFontSize(10),
+    fontSize: getFontSize(12),
     lineHeight: getFontSize(16),
     fontWeight: 'bold'
   },
   body1: {
-    fontSize: getFontSize(14),
+    fontSize: getFontSize(16),
     lineHeight: getFontSize(16),
     fontWeight: 'regular'
   },
   body2: {
-    fontSize: getFontSize(12),
+    fontSize: getFontSize(14),
     lineHeight: getFontSize(16),
     fontWeight: 'regular'
   },
   body3: {
-    fontSize: getFontSize(10),
+    fontSize: getFontSize(12),
     lineHeight: getFontSize(16),
     fontWeight: 'regular'
   }
