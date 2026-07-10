@@ -29,7 +29,7 @@ export default function Pokemon(){
     }
   }
 
-  const onNext = () => pager.current?.setPage(2)
+  const onNext = () => pager.current?.setPage(2 + offset.current)
   const onPrevious = () => pager.current?.setPage(0)
 
   return (
