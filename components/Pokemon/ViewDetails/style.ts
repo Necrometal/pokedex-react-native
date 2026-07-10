@@ -17,6 +17,8 @@ export const styles = StyleSheet.create({
   picture: {
     width: getFontSize(200),
     height: getFontSize(200),
+  },
+  imagePokemon: {
     alignSelf: 'center',
     position: 'absolute',
     top: -getFontSize(140),
@@ -41,5 +43,13 @@ export const styles = StyleSheet.create({
     height: 60,
     textAlignVertical: 'center',
     textAlign: 'justify'
+  },
+  navigationBtn: {
+    width: getFontSize(20),
+    height: getFontSize(20),
+  },
+  emptybox: {
+    width: 24,
+    height: 24
   }
 })

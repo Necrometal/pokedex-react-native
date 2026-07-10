@@ -15,3 +15,5 @@ export const STAT_MAX_VALUE = {
   SDEF: 230,
   SPD: 200
 }
+
+export const COUNT_POKEMON = 1025

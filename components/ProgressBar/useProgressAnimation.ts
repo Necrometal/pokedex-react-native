@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Animated, Easing, LayoutChangeEvent, View } from "react-native"
+import { Animated, Easing, LayoutChangeEvent } from "react-native"
+
 type progressValue = {
   value: number,
   maxValue?: number,
@@ -14,49 +15,53 @@ export default function useProgressAnimation({
   maxValue
 }: progressValue) {
   const widthAnim = useRef(new Animated.Value(0)).current
-  const containerRef = useRef<View>(null)
+  const [layoutWidth, setLayoutWidth] = useState(0)
 
-  const [container, setContainer] = useState(0);
-
-  // Mesure la largeur du container une seule fois
+  // Mesure la largeur du progression une seule fois
   const onLayout = useCallback((event: LayoutChangeEvent) => {
-    const layoutWidth = event.nativeEvent.layout.width
-    const width = maxValue ? calculScale(maxValue, layoutWidth) : layoutWidth;
-    setContainer(width);
-  }, []);
+    const width = event.nativeEvent.layout.width
+    if (width > 0) {
+      setLayoutWidth(width)
+    }
+  }, [])
 
-  const calculScale = (max: number, layout: number) => {
-    const p =  (value * 100) / max
 
-    return (layout * p) / 100
-  }
+  const calculScale = ((layout: number, max?: number) => {
+    if(max){
+      const p = (value * 100) / max
+      return (layout * p) / 100
+    }
+    return value * (layout / 100)
+  })
 
-  // Animation
+  const progression = layoutWidth > 0
+    ? calculScale(layoutWidth, maxValue)
+    : 0
+
   const animateProgress = useCallback(() => {
-    if (container === 0) return;
-
-    const progress = Math.min(Math.max(value, 0), 100); // clamp entre 0 et 100
+    if (progression <= 0) return
 
     Animated.timing(widthAnim, {
-      toValue: container,
-      // toValue: (progress / 100) * percent,
-      duration: duration,
+      toValue: progression,
+      duration,
       useNativeDriver: false,
       easing: Easing.out(Easing.ease),
       delay
-    }).start();
-  }, [value, container, widthAnim, duration, delay]);
+    }).start()
+  }, [progression, duration, delay, widthAnim])
 
-   // Déclenche l'animation quand la largeur est disponible + valeur change
-   useEffect(() => {
-    if (container > 0) {
-      animateProgress();
+  useEffect(() => {
+    widthAnim.setValue(0)
+  }, [value, widthAnim])
+
+  useEffect(() => {
+    if (progression > 0) {
+      animateProgress()
     }
-  }, [animateProgress]);
+  }, [progression, animateProgress])
 
   return {
     widthAnim,
-    containerRef,
-    onLayout
+    onLayout,
   }
 }
