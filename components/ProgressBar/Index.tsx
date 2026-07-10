@@ -12,7 +12,7 @@ type Props = ViewProps & {
 
 export default function ProgressBar({style, height, color, value, delay = 0, maxValue, ...rest}: Props){
   const colors = useColorTheme()
-  const { onLayout, widthAnim } = useProgressAnimation({ value: value ?? 0, delay, maxValue })
+  const { onLayout, widthAnim } = useProgressAnimation({ value: value ?? 0, delay, maxValue: 200 })
 
   return (
     <View 
