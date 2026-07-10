@@ -124,3 +124,25 @@ export type PokemonDetails = {
   types: PokemonTypeItem[];
 }
 
+export type FlavorText = {
+  flavor_text: string,
+  language: General,
+  version: General
+}
+
+export type PokemonSpecies = {
+  flavor_text_entries?: FlavorText[]
+}
+
+export type PokemonDamage = {
+  double_damage_to: General[],
+  double_damage_from: General[],
+  half_damage_to: General[],
+  half_damage_from: General[],
+  no_damage_from: General[],
+  no_damage_to: General[],
+}
+
+export type PokemonType = {
+  damage_relations: PokemonDamage
+}

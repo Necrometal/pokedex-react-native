@@ -1,10 +1,14 @@
 import { Card } from '@/components/Card';
+import SearchBar from '@/components/Form/SearchBar';
+import { RootView } from '@/components/Layout/RootView';
+import { Row } from '@/components/Layout/Row';
 import PokemonCardListItem from '@/components/Pokemon/CardListItem';
+import SortButton, { SORT_VALUE, SortType } from '@/components/SortButton';
 import { ThemedText } from '@/components/ThemedText';
 import usePokemonList from '@/hooks/screen/usePokemonList';
 import { useColorTheme } from "@/hooks/useColorTheme";
+import { useState } from 'react';
 import { FlatList, Image, StyleSheet, View, useWindowDimensions } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const colors = useColorTheme()
@@ -12,31 +16,52 @@ export default function Index() {
   const itemWidth = (width - 48) / 3;
 
   const { pokemons, isFetching, fetchNextPage, refetch } = usePokemonList()
+  const [search, setSearch] = useState('')
+  const [sortKey, setSortKey] = useState<SortType>(SORT_VALUE.id)
+
+  const filteredPokemons = [
+    ...(search 
+      ? pokemons.filter((p) => p.name.includes(search.toLocaleLowerCase()) || p.id.toString() === search)
+      : pokemons)
+  ].sort((a, b) => a[sortKey] < b[sortKey] ? -1 : 1)
+  
+  const onChange = (s: string) => {
+    setSearch(s)
+  }
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.tint}]}>
+    <RootView style={[styles.container, {backgroundColor: colors.tint}]}>
       <View style={styles.header}>
-        <Image source={require('@/assets/images/pokeball.png')} width={24} height={24}/>
-        <ThemedText color="grayWhite" variant="headline" >Pokédex {pokemons.length}</ThemedText>
+        <Row style={styles.headerTitle}>
+          <Image source={require('@/assets/images/pokeball.png')} style={styles.headerIcon}/>
+          <ThemedText color="grayWhite" variant="headline" >Pokédex</ThemedText>
+        </Row>
+        <Row gap={8}>
+          <SearchBar value={search} onChange={onChange} style={styles.search}/>
+          <SortButton value={sortKey} onChange={setSortKey}/>
+        </Row>
       </View>
 
       <Card style={styles.body}>
         <FlatList
-          data={pokemons}
+          data={filteredPokemons }
           renderItem={({item}) => (
-            <PokemonCardListItem item={item} style={[styles.item, { width: itemWidth, height: itemWidth - 4 }]} />
+            <PokemonCardListItem 
+              item={{ id: item.id, name: item.name }} 
+              style={[{ width: itemWidth, height: itemWidth - 4 }]} 
+            />
           )}
           numColumns={3}
           keyExtractor={(item) => `${item.id}`}
           columnWrapperStyle={styles.grid}
           contentContainerStyle={[styles.grid, styles.list]}
-          onEndReached={() => fetchNextPage()}
+          onEndReached={search ? undefined : () => fetchNextPage()}
           onRefresh={() => refetch()}
           refreshing={isFetching}
           onStartReachedThreshold={2}
         />
       </Card>
-    </SafeAreaView>
+    </RootView>
   );
 }
 
@@ -47,20 +72,28 @@ const styles = StyleSheet.create({
     paddingTop: 4
   },
   header: {
+    padding: 12
+  },
+  headerTitle :{
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    padding: 12
+  },
+  headerIcon: { 
+    width: 24, 
+    height: 24,
+    aspectRatio: 4/4
   },
   body: {
     flex: 1,
-  },
-  item: {
   },
   grid: {
     gap: 8,
   },
   list: {
     padding: 12,
+  },
+  search: {
+    flex: 1
   }
 })

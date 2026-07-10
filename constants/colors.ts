@@ -1,3 +1,5 @@
+export type ColorType = keyof typeof Colors.type
+
 export const Colors = {
   light: {
     tint: '#dc0a2d',

@@ -18,9 +18,9 @@ export function ThemedText ({
   
   return <Text 
     style={[
+      {color: colors[color ?? 'grayDark']},
       style,
       styles[variant ?? 'body3'],
-      {color: colors[color ?? 'grayDark']}
     ]} 
     {...rest}
   />

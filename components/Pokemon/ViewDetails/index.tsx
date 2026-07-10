@@ -1,58 +1,130 @@
+import { Card } from "@/components/Card";
+import { RootView } from "@/components/Layout/RootView";
+import { Row } from "@/components/Layout/Row";
 import { ThemedText } from "@/components/ThemedText";
+import { ColorType } from "@/constants/colors";
+import { COUNT_POKEMON, STAT_NAME } from "@/constants/pokemon";
 import { useColorTheme } from "@/hooks/useColorTheme";
-import { PokemonDetails } from "@/repositories/model/pokemon";
-import { capitalizeFirstLetter } from "@/utils/string";
-import { Animated, Image, StyleSheet, View, ViewProps } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { FlavorText, PokemonDetails, PokemonSpecies } from "@/repositories/model/pokemon";
+import { formatWeight, getPokemonArtWork } from "@/utils/pokemon";
+import { capitalizeFirstLetter, cleanText } from "@/utils/string";
+import { useAudioPlayer } from 'expo-audio';
+import { Animated, Image, Pressable, View, ViewProps } from "react-native";
+import PokemonSpec from "../PokemonSpec";
+import { PokemonStat } from "../PokemonStat";
+import PokemonType from "../PokemonType";
+import Header from "./Header";
+import { styles } from "./style";
 import usePokemonViewDetailsAnimation from "./useAnimation";
-import useRenderInfo from "./useRenderInfo";
 
 type Props = ViewProps & {
-  pokemon?: PokemonDetails;
+  pokemon: PokemonDetails;
   isFetching: boolean;
+  species?: PokemonSpecies,
+  onPrevious: () => void,
+  onNext: () => void,
 }
 
-export default function PokemonViewDetails({pokemon}: Props){
+export default function PokemonViewDetails({pokemon, species, onNext, onPrevious}: Props){
+  const {backgroundColor, colorType} = usePokemonViewDetailsAnimation(pokemon)
   const colors = useColorTheme()
+  const bio = species?.flavor_text_entries?.find(({ language }: FlavorText) => language.name === 'en')
+  const cry =  pokemon.cries.latest
+  const player = useAudioPlayer(cry);
 
-  const {backgroundColor} = usePokemonViewDetailsAnimation(pokemon)
-  const renderInfo = useRenderInfo(pokemon)
-  
+  const onImagePress = () => {
+    if(!cry) return
+    play()
+  }
+
+  const play = () => {
+    player.seekTo(0);
+    player.play();
+  }
+
+  const prevPokemon = () => {
+    onPrevious()
+  }
+
+  const nextPokemon = () => {
+    onNext()
+  }
+
   return (
     <Animated.View style={[styles.container, {backgroundColor}]}>
-      <SafeAreaView style={[styles.container]}>
-        <View style={[styles.header]}>
-          <View style={styles.headerLeft}>
-            <Image width={20.53} height={20.53} style={styles.arrow} source={require('@/assets/images/arrow_back.png')} />
-            <ThemedText color="grayWhite" variant="headline">{capitalizeFirstLetter(renderInfo.name)}</ThemedText>
+      <RootView>
+        <View>
+          <Image source={require('@/assets/images/big_pokeball.png')} style={styles.backgroundIcon}/>
+          <Header pokeName={capitalizeFirstLetter(pokemon.name)} pokeId={String(pokemon.id).padStart(3, '0')}/>
+          <View style={styles.body}>
+            <Row style={styles.imagePokemon} gap={24}>
+              {
+                pokemon.id > 1 ? (
+                  <Pressable onPress={prevPokemon}>
+                    <Image 
+                      source={require('@/assets/images/previous.png')} 
+                      style={styles.navigationBtn}
+                    />
+                  </Pressable>
+                ) : <View style={styles.emptybox}/>
+              }
+              <Pressable onPress={onImagePress}>
+                <Image 
+                  source={pokemon.id ? {uri: getPokemonArtWork(pokemon.id)} : require('@/assets/images/Silhouette.png')} 
+                  style={styles.picture}
+                />
+              </Pressable>
+              {
+                pokemon.id < COUNT_POKEMON ? (
+                  <Pressable onPress={nextPokemon}>
+                    <Image 
+                      source={require('@/assets/images/next.png')} 
+                      style={styles.navigationBtn}
+                    />
+                  </Pressable>
+                ) : <View style={styles.emptybox}/>
+              }
+            </Row>
+            <Card style={styles.card}>
+              <Row gap={16}>
+                {
+                  pokemon.types.map(t => (
+                    <PokemonType key={`type-${t.type.name}`} type={t.type.name as ColorType}/>
+                  ))
+                }
+              </Row>
+              <ThemedText variant="subtitle1" style={[styles.subtitle, { color: colorType }]}>
+                About
+              </ThemedText>
+              <Row style={{ marginBottom: 8}}>
+                <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/weight.png')} title={formatWeight(pokemon.weight)} description="Weight"/>
+                <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/straighten_2.png')} title={`${pokemon.height} m`} description="Height"/>
+                <PokemonSpec 
+                  style={styles.about} 
+                  title={pokemon.moves.slice(0, 2).map((m) => capitalizeFirstLetter(m.move.name)).join("\n")}
+                  description="Moves"
+                />
+              </Row>
+
+              <ThemedText style={styles.flavor} color="grayDark" variant="body3">
+                { bio ? cleanText(bio.flavor_text) : 'unknown' }
+              </ThemedText>
+              
+              <ThemedText variant="subtitle1" style={[styles.subtitle, { color: colorType }]}>
+                Base stats
+              </ThemedText>
+
+              <View>
+                {
+                  pokemon.stats.map((stat, i) => (
+                    <PokemonStat index={i} key={`stat-${stat.stat.name}`} color={colorType} name={STAT_NAME[stat.stat.name as keyof typeof STAT_NAME]} value={stat.base_stat}/>
+                  ))
+                }
+              </View>
+            </Card>
           </View>
-          <ThemedText color="grayWhite" variant="subtitle2">#{String(renderInfo.id).padStart(3, '0')}</ThemedText>
         </View>
-      </SafeAreaView>
+      </RootView>
     </Animated.View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 24
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8
-  },
-  arrow: {
-    tintColor: 'white',
-    width: 30,
-    height: 30
-  }
-})
