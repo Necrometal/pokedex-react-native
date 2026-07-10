@@ -9,7 +9,6 @@ import { FlavorText, PokemonDetails, PokemonSpecies } from "@/repositories/model
 import { formatWeight, getPokemonArtWork } from "@/utils/pokemon";
 import { capitalizeFirstLetter, cleanText } from "@/utils/string";
 import { useAudioPlayer } from 'expo-audio';
-import { router } from "expo-router";
 import { Animated, Image, Pressable, View, ViewProps } from "react-native";
 import PokemonSpec from "../PokemonSpec";
 import { PokemonStat } from "../PokemonStat";
@@ -22,10 +21,11 @@ type Props = ViewProps & {
   pokemon: PokemonDetails;
   isFetching: boolean;
   species?: PokemonSpecies,
-  // types: TypesPokemon[]
+  onPrevious: () => void,
+  onNext: () => void,
 }
 
-export default function PokemonViewDetails({pokemon, species}: Props){
+export default function PokemonViewDetails({pokemon, species, onNext, onPrevious}: Props){
   const {backgroundColor, colorType} = usePokemonViewDetailsAnimation(pokemon)
   const colors = useColorTheme()
   const bio = species?.flavor_text_entries?.find(({ language }: FlavorText) => language.name === 'en')
@@ -43,11 +43,11 @@ export default function PokemonViewDetails({pokemon, species}: Props){
   }
 
   const prevPokemon = () => {
-    router.replace({ pathname: '/pokemon/[id]', params: { id: pokemon.id - 1 } })
+    onPrevious()
   }
 
   const nextPokemon = () => {
-    router.replace({ pathname: '/pokemon/[id]', params: { id: pokemon.id + 1 } })
+    onNext()
   }
 
   return (
@@ -57,16 +57,16 @@ export default function PokemonViewDetails({pokemon, species}: Props){
           <Image source={require('@/assets/images/big_pokeball.png')} style={styles.backgroundIcon}/>
           <Header pokeName={capitalizeFirstLetter(pokemon.name)} pokeId={String(pokemon.id).padStart(3, '0')}/>
           <View style={styles.body}>
-            <Row style={styles.imagePokemon}>
+            <Row style={styles.imagePokemon} gap={24}>
               {
-                pokemon.id > 1 && (
+                pokemon.id > 1 ? (
                   <Pressable onPress={prevPokemon}>
                     <Image 
-                      source={require('@/assets/images/chevron_left.png')} 
+                      source={require('@/assets/images/previous.png')} 
                       style={styles.navigationBtn}
                     />
                   </Pressable>
-                )
+                ) : <View style={styles.emptybox}/>
               }
               <Pressable onPress={onImagePress}>
                 <Image 
@@ -75,14 +75,14 @@ export default function PokemonViewDetails({pokemon, species}: Props){
                 />
               </Pressable>
               {
-                pokemon.id < COUNT_POKEMON && (
+                pokemon.id < COUNT_POKEMON ? (
                   <Pressable onPress={nextPokemon}>
                     <Image 
-                      source={require('@/assets/images/chevron_right.png')} 
+                      source={require('@/assets/images/next.png')} 
                       style={styles.navigationBtn}
                     />
                   </Pressable>
-                )
+                ) : <View style={styles.emptybox}/>
               }
             </Row>
             <Card style={styles.card}>

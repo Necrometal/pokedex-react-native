@@ -45,7 +45,11 @@ export const styles = StyleSheet.create({
     textAlign: 'justify'
   },
   navigationBtn: {
-    width: getFontSize(24),
-    height: getFontSize(24)
+    width: getFontSize(20),
+    height: getFontSize(20),
+  },
+  emptybox: {
+    width: 24,
+    height: 24
   }
 })
