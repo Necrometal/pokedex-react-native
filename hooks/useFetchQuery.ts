@@ -1,5 +1,5 @@
 import { POKEDEX_API_URL } from '@env';
-import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const formatUrl = (path: string, params?: Record<string, string | number>) => {
   return Object.entries(params ?? {})
@@ -19,6 +19,22 @@ export function useFetchQuery<T>(path: string, params?: Record<string, string | 
         }
       }).then((r) => r.json())
     }
+  })
+}
+
+export function useFetchQueries<T>(paths: string[], enabled: boolean) {
+  return useQueries({
+    queries: paths.map((q) => ({
+      queryKey: [q],
+      queryFn: async (): Promise<T> => {
+        return fetch(`${POKEDEX_API_URL}${q}`, {
+          headers: {
+            "Accept": "application/json"
+          }
+        }).then((r) => r.json())
+      },
+      enabled
+    }))
   })
 }
 

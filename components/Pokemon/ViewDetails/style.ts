@@ -17,6 +17,8 @@ export const styles = StyleSheet.create({
   picture: {
     width: getFontSize(200),
     height: getFontSize(200),
+  },
+  pressable: {
     alignSelf: 'center',
     position: 'absolute',
     top: -getFontSize(140),

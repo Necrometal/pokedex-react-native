@@ -8,43 +8,57 @@ import { useColorTheme } from "@/hooks/useColorTheme";
 import { FlavorText, PokemonDetails, PokemonSpecies } from "@/repositories/model/pokemon";
 import { formatWeight, getPokemonArtWork } from "@/utils/pokemon";
 import { capitalizeFirstLetter, cleanText } from "@/utils/string";
-import { Animated, Image, View, ViewProps } from "react-native";
+import { useAudioPlayer } from 'expo-audio';
+import { Animated, Image, Pressable, View, ViewProps } from "react-native";
 import PokemonSpec from "../PokemonSpec";
 import { PokemonStat } from "../PokemonStat";
 import PokemonType from "../PokemonType";
 import Header from "./Header";
 import { styles } from "./style";
 import usePokemonViewDetailsAnimation from "./useAnimation";
-import useRenderInfo from "./useRenderInfo";
 
 type Props = ViewProps & {
-  pokemon?: PokemonDetails;
+  pokemon: PokemonDetails;
   isFetching: boolean;
-  species: PokemonSpecies
+  species: PokemonSpecies,
+  // types: TypesPokemon[]
 }
 
 export default function PokemonViewDetails({pokemon, species}: Props){
-
-  const data = useRenderInfo(pokemon)
-  const {backgroundColor, colorType} = usePokemonViewDetailsAnimation(data)
+  const {backgroundColor, colorType} = usePokemonViewDetailsAnimation(pokemon)
   const colors = useColorTheme()
   const bio = species.flavor_text_entries?.find(({ language }: FlavorText) => language.name === 'en')
+  const cry =  pokemon.cries.latest
+  const player = useAudioPlayer(cry);
+
+  const onImagePress = () => {
+    if(!cry) return
+
+    play()
+  }
+
+  const play = () => {
+    player.seekTo(0);
+    player.play();
+  }
 
   return (
     <Animated.View style={[styles.container, {backgroundColor}]}>
       <RootView>
         <View>
           <Image source={require('@/assets/images/big_pokeball.png')} style={styles.backgroundIcon}/>
-          <Header pokeName={capitalizeFirstLetter(data.name)} pokeId={String(data.id).padStart(3, '0')}/>
+          <Header pokeName={capitalizeFirstLetter(pokemon.name)} pokeId={String(pokemon.id).padStart(3, '0')}/>
           <View style={styles.body}>
-            <Image 
-              source={pokemon ? {uri: getPokemonArtWork(pokemon.id)} : require('@/assets/images/Silhouette.png')} 
-              style={styles.picture}
-            />
+            <Pressable onPress={onImagePress} style={styles.pressable}>
+              <Image 
+                source={pokemon.id ? {uri: getPokemonArtWork(pokemon.id)} : require('@/assets/images/Silhouette.png')} 
+                style={styles.picture}
+              />
+            </Pressable>
             <Card style={styles.card}>
               <Row gap={16}>
                 {
-                  data.types.map(t => (
+                  pokemon.types.map(t => (
                     <PokemonType key={`type-${t.type.name}`} type={t.type.name as ColorType}/>
                   ))
                 }
@@ -53,11 +67,11 @@ export default function PokemonViewDetails({pokemon, species}: Props){
                 About
               </ThemedText>
               <Row style={{ marginBottom: 8}}>
-                <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/weight.png')} title={formatWeight(data.weight)} description="Weight"/>
-                <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/straighten_2.png')} title={`${data.height} m`} description="Height"/>
+                <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/weight.png')} title={formatWeight(pokemon.weight)} description="Weight"/>
+                <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/straighten_2.png')} title={`${pokemon.height} m`} description="Height"/>
                 <PokemonSpec 
                   style={styles.about} 
-                  title={data.moves.slice(0, 2).map((m) => capitalizeFirstLetter(m.move.name)).join("\n")}
+                  title={pokemon.moves.slice(0, 2).map((m) => capitalizeFirstLetter(m.move.name)).join("\n")}
                   description="Moves"
                 />
               </Row>
@@ -72,7 +86,7 @@ export default function PokemonViewDetails({pokemon, species}: Props){
 
               <View>
                 {
-                  data.stats.map((stat, i) => (
+                  pokemon.stats.map((stat, i) => (
                     <PokemonStat index={i} key={`stat-${stat.stat.name}`} color={colorType} name={STAT_NAME[stat.stat.name as keyof typeof STAT_NAME]} value={stat.base_stat}/>
                   ))
                 }
