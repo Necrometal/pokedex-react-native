@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
     width: getFontSize(200),
     height: getFontSize(200),
   },
-  pressable: {
+  imagePokemon: {
     alignSelf: 'center',
     position: 'absolute',
     top: -getFontSize(140),
@@ -43,5 +43,9 @@ export const styles = StyleSheet.create({
     height: 60,
     textAlignVertical: 'center',
     textAlign: 'justify'
+  },
+  navigationBtn: {
+    width: getFontSize(24),
+    height: getFontSize(24)
   }
 })

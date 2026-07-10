@@ -9,6 +9,7 @@ import { FlavorText, PokemonDetails, PokemonSpecies } from "@/repositories/model
 import { formatWeight, getPokemonArtWork } from "@/utils/pokemon";
 import { capitalizeFirstLetter, cleanText } from "@/utils/string";
 import { useAudioPlayer } from 'expo-audio';
+import { router } from "expo-router";
 import { Animated, Image, Pressable, View, ViewProps } from "react-native";
 import PokemonSpec from "../PokemonSpec";
 import { PokemonStat } from "../PokemonStat";
@@ -20,26 +21,33 @@ import usePokemonViewDetailsAnimation from "./useAnimation";
 type Props = ViewProps & {
   pokemon: PokemonDetails;
   isFetching: boolean;
-  species: PokemonSpecies,
+  species?: PokemonSpecies,
   // types: TypesPokemon[]
 }
 
 export default function PokemonViewDetails({pokemon, species}: Props){
   const {backgroundColor, colorType} = usePokemonViewDetailsAnimation(pokemon)
   const colors = useColorTheme()
-  const bio = species.flavor_text_entries?.find(({ language }: FlavorText) => language.name === 'en')
+  const bio = species?.flavor_text_entries?.find(({ language }: FlavorText) => language.name === 'en')
   const cry =  pokemon.cries.latest
   const player = useAudioPlayer(cry);
 
   const onImagePress = () => {
     if(!cry) return
-
     play()
   }
 
   const play = () => {
     player.seekTo(0);
     player.play();
+  }
+
+  const prevPokemon = () => {
+    router.replace({ pathname: '/pokemon/[id]', params: { id: pokemon.id - 1 } })
+  }
+
+  const nextPokemon = () => {
+    router.replace({ pathname: '/pokemon/[id]', params: { id: pokemon.id + 1 } })
   }
 
   return (
@@ -49,12 +57,30 @@ export default function PokemonViewDetails({pokemon, species}: Props){
           <Image source={require('@/assets/images/big_pokeball.png')} style={styles.backgroundIcon}/>
           <Header pokeName={capitalizeFirstLetter(pokemon.name)} pokeId={String(pokemon.id).padStart(3, '0')}/>
           <View style={styles.body}>
-            <Pressable onPress={onImagePress} style={styles.pressable}>
-              <Image 
-                source={pokemon.id ? {uri: getPokemonArtWork(pokemon.id)} : require('@/assets/images/Silhouette.png')} 
-                style={styles.picture}
-              />
-            </Pressable>
+            <Row style={styles.imagePokemon}>
+              {
+                pokemon.id > 1 && (
+                  <Pressable onPress={prevPokemon}>
+                    <Image 
+                      source={require('@/assets/images/chevron_left.png')} 
+                      style={styles.navigationBtn}
+                    />
+                  </Pressable>
+                )
+              }
+              <Pressable onPress={onImagePress}>
+                <Image 
+                  source={pokemon.id ? {uri: getPokemonArtWork(pokemon.id)} : require('@/assets/images/Silhouette.png')} 
+                  style={styles.picture}
+                />
+              </Pressable>
+              <Pressable onPress={nextPokemon}>
+                <Image 
+                  source={require('@/assets/images/chevron_right.png')} 
+                  style={styles.navigationBtn}
+                />
+              </Pressable>
+            </Row>
             <Card style={styles.card}>
               <Row gap={16}>
                 {
