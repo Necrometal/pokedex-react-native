@@ -3,7 +3,7 @@ import { RootView } from "@/components/Layout/RootView";
 import { Row } from "@/components/Layout/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { ColorType } from "@/constants/colors";
-import { STAT_NAME } from "@/constants/pokemon";
+import { COUNT_POKEMON, STAT_NAME } from "@/constants/pokemon";
 import { useColorTheme } from "@/hooks/useColorTheme";
 import { FlavorText, PokemonDetails, PokemonSpecies } from "@/repositories/model/pokemon";
 import { formatWeight, getPokemonArtWork } from "@/utils/pokemon";
@@ -74,12 +74,16 @@ export default function PokemonViewDetails({pokemon, species}: Props){
                   style={styles.picture}
                 />
               </Pressable>
-              <Pressable onPress={nextPokemon}>
-                <Image 
-                  source={require('@/assets/images/chevron_right.png')} 
-                  style={styles.navigationBtn}
-                />
-              </Pressable>
+              {
+                pokemon.id < COUNT_POKEMON && (
+                  <Pressable onPress={nextPokemon}>
+                    <Image 
+                      source={require('@/assets/images/chevron_right.png')} 
+                      style={styles.navigationBtn}
+                    />
+                  </Pressable>
+                )
+              }
             </Row>
             <Card style={styles.card}>
               <Row gap={16}>
