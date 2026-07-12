@@ -3,6 +3,7 @@ import { useColorTheme } from '@/hooks/useColorTheme';
 import { getPokemonArtWork } from '@/utils/pokemon';
 import { capitalizeFirstLetter } from '@/utils/string';
 import { Link } from 'expo-router';
+import React from 'react';
 import { Image, Pressable, StyleSheet, View, ViewProps } from "react-native";
 import { Card } from "../Card";
 
@@ -18,7 +19,7 @@ export default function PokemonCardListItem({item, style, ...props}: Props) {
 
   return (
     <Link href={{pathname: '/pokemon/[id]', params: {id: item.id}}} asChild>
-      <Pressable style={[style]} {...props}>
+      <Pressable style={StyleSheet.flatten(style)} {...props}>
         <Card style={[styles.item, style]} {...props}>
           <View style={[styles.shadow, { backgroundColor: colors.graybackground }]} />
           <ThemedText style={styles.id} color="grayDark" variant='caption'>#{item.id}</ThemedText>
