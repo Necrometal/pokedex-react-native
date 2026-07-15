@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "pokedex",
+    "name": "PokeNav",
     "slug": "pokedex",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/pokeball-icon.png",
-    "scheme": "pokedex",
+    "scheme": "PokeNav",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -38,15 +38,9 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/android-background.png",
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "ios": {
-            "image": "./assets/images/android-background.png"
-          },
-          "android": {
-            "image": "./assets/images/android-background.png"
-          }
+          "image": "./assets/images/pokeball-icon.png",
+          "imageWidth": 200,
+          "backgroundColor": "#ffffff"
         }
       ],
       "expo-font",
