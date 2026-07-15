@@ -14,6 +14,11 @@ export function formatWeight(weight?: number): string {
   return (weight / 10).toString().replace('.', ',') + 'kg'
 }
 
+export function formatHeight(height?: number): string {
+  if(!height) return ""
+  return (height / 10).toString().replace('.', ',') + 'kg'
+}
+
 export function retrieveWeakness(relation: PokemonType[]) {
   return relation.reduce((acc, item) => {
     if(acc.length === 0) acc = [...item.damage_relations.double_damage_from.map((d) => d.name)]

@@ -7,7 +7,7 @@ import SortButton, { SORT_VALUE, SortType } from '@/components/SortButton';
 import { ThemedText } from '@/components/ThemedText';
 import usePokemonList from '@/hooks/screen/usePokemonList';
 import { useColorTheme } from "@/hooks/useColorTheme";
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FlatList, Image, StyleSheet, View, useWindowDimensions } from "react-native";
 
 export default function Index() {
