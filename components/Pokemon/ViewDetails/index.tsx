@@ -6,9 +6,10 @@ import { ColorType } from "@/constants/colors";
 import { COUNT_POKEMON, STAT_NAME } from "@/constants/pokemon";
 import { useColorTheme } from "@/hooks/useColorTheme";
 import { FlavorText, PokemonDetails, PokemonSpecies } from "@/repositories/model/pokemon";
-import { formatWeight, getPokemonArtWork } from "@/utils/pokemon";
+import { formatHeight, formatWeight, getPokemonArtWork } from "@/utils/pokemon";
 import { capitalizeFirstLetter, cleanText } from "@/utils/string";
 import { useAudioPlayer } from 'expo-audio';
+import React from "react";
 import { Animated, Image, Pressable, View, ViewProps } from "react-native";
 import PokemonSpec from "../PokemonSpec";
 import { PokemonStat } from "../PokemonStat";
@@ -98,7 +99,7 @@ export default function PokemonViewDetails({pokemon, species, onNext, onPrevious
               </ThemedText>
               <Row style={{ marginBottom: 8}}>
                 <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/weight.png')} title={formatWeight(pokemon.weight)} description="Weight"/>
-                <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/straighten_2.png')} title={`${pokemon.height} m`} description="Height"/>
+                <PokemonSpec style={[styles.about, { borderRightWidth: 1, borderColor: colors.grayLight }]} image={require('@/assets/images/straighten_2.png')} title={`${formatHeight(pokemon.height)} m`} description="Height"/>
                 <PokemonSpec 
                   style={styles.about} 
                   title={pokemon.moves.slice(0, 2).map((m) => capitalizeFirstLetter(m.move.name)).join("\n")}

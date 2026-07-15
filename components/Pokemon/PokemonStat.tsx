@@ -1,5 +1,6 @@
 import { useColorTheme } from "@/hooks/useColorTheme";
 import { formatNumber } from "@/utils/string";
+import React from "react";
 import { StyleSheet, View, ViewProps } from "react-native";
 import { Row } from "../Layout/Row";
 import ProgressBar from "../ProgressBar/Index";
